@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <title>PORKCENTER - Comprar Porcinos</title>
+    <link rel="icon" type="image/png" href="images/logo_porkcenter.png">
+    <meta name="theme-color" content="#e82b10">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PORKCENTER">
+    <link rel="apple-touch-icon" href="images/logo_porkcenter.png">
+    <meta name="description" content="Compra los mejores porcinos en Colombia. Catálogo completo con razas y precios actualizados.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== HERO COMPRAR ===== */
+        .hero-comprar {
+            padding: 120px 20px 60px;
+            background: linear-gradient(135deg, #111 0%, #1a1a2e 100%);
+            text-align: center; color: #fff;
+        }
+        .hero-comprar h1 { font-size: 2.8rem; margin-bottom: 15px; }
+        .hero-comprar p { font-size: 1.1rem; color: rgba(255,255,255,0.78); max-width: 600px; margin: 0 auto; }
+
+        /* ===== FILTROS ===== */
+        .seccion-filtros {
+            background: #fff; padding: 30px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06); position: sticky; top: 64px; z-index: 100;
+        }
+        .barra-filtros { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+        .barra-filtros input, .barra-filtros select {
+            flex: 1; min-width: 160px; padding: 11px 16px;
+            border: 1.5px solid #e0e0e0; border-radius: 10px;
+            font-family: 'Outfit', sans-serif; font-size: 0.9rem;
+            background: #fff; transition: border-color 0.3s; outline: none;
+        }
+        .barra-filtros input:focus, .barra-filtros select:focus { border-color: #e82b10; }
+        .btn-filtrar {
+            padding: 11px 22px; background: #e82b10; color: #fff;
+            border: none; border-radius: 10px; font-family: 'Outfit', sans-serif;
+            font-weight: 700; cursor: pointer; transition: background 0.3s; white-space: nowrap;
+        }
+        .btn-filtrar:hover { background: #c0230e; }
+
+        /* ===== CATÁLOGO CON FONDO DE CAMPO (PASTO SECO) ===== */
+        .seccion-catalogo {
+            padding: 60px 0 100px;
+            background-image: url('images/fondo_del_campo.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 85vh;
+        }
+        .seccion-catalogo .contenedor {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 35px 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        .cuadricula-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+
+        /* Tarjeta producto (Diseño exacto de captura) */
+        .tarjeta-producto {
+            background: #fff; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer; display: flex; flex-direction: column; position: relative;
+        }
+        .tarjeta-producto:hover { transform: translateY(-6px); box-shadow: 0 14px 32px rgba(0,0,0,0.12); }
+        .img-producto {
+            height: 215px; background-size: cover; background-position: center; position: relative;
+            overflow: hidden;
+        }
+        .img-overlay-hover {
+            position: absolute; inset: 0; background: rgba(232, 43, 16, 0.68);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s ease;
+            color: #fff; font-weight: 700; font-size: 1.05rem; gap: 6px;
+        }
+        .tarjeta-producto:hover .img-overlay-hover { opacity: 1; }
+        
+        .info-producto { padding: 18px 20px 22px; display: flex; flex-direction: column; flex: 1; }
+        .categoria-tag-mini {
+            font-size: 0.8rem; font-weight: 800; color: #e82b10;
+            margin-bottom: 5px; display: inline-block; text-transform: capitalize;
+        }
+        .info-producto h3 {
+            font-size: 1.2rem; margin-bottom: 8px; color: #111;
+            font-weight: 800; line-height: 1.3;
+        }
+        .detalles-linea-1 {
+            color: #718096; font-size: 0.86rem; margin-bottom: 4px;
+        }
+        .detalles-linea-2 {
+            color: #718096; font-size: 0.86rem; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .precio-producto {
+            font-size: 1.45rem; font-weight: 800; color: #e82b10;
+            margin-bottom: 16px; margin-top: auto;
+        }
+        .botones-producto { display: flex; gap: 10px; align-items: center; }
+        .btn-ver-detalles-pill {
+            flex: 1; padding: 11px 20px; background: #e82b10; color: #fff;
+            border: none; border-radius: 30px; font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            text-align: center; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-ver-detalles-pill:hover { background: #c0230e; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(232,43,16,0.35); }
+        .btn-cart-circle {
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 1.5px solid #e2e8f0; background: #fff;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0; color: #475569;
+        }
+        .btn-cart-circle:hover {
+            border-color: #e82b10; color: #e82b10; background: #fff8f8;
+            transform: scale(1.06);
+        }
+
+        /* Modal interactivo de producto (Diseño exacto de capturas) */
+        .overlay-producto {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+            z-index: 4000; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease; display: flex; align-items: center;
+            justify-content: center; padding: 20px; backdrop-filter: blur(6px);
+        }
+        .overlay-producto.activo { opacity: 1; pointer-events: all; }
+        .modal-producto {
+            background: #fff; border-radius: 20px; width: 100%;
+            max-width: 680px; max-height: 90vh; overflow-y: auto;
+            scrollbar-width: none; transform: scale(0.92) translateY(20px);
+            transition: transform 0.35s cubic-bezier(0.25,0.8,0.25,1);
+            box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+        }
+        .modal-producto::-webkit-scrollbar { display: none; }
+        .overlay-producto.activo .modal-producto { transform: scale(1) translateY(0); }
+        
+        .img-modal-producto {
+            height: 270px; background-size: cover; background-position: center;
+            position: relative; border-radius: 20px 20px 0 0;
+            background-color: #111;
+            display: flex; align-items: flex-end; padding: 22px 26px;
+        }
+        .img-modal-producto::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.75) 100%);
+            border-radius: 20px 20px 0 0;
+        }
+        .badge-modal-tag {
+            position: absolute; top: 18px; left: 20px; z-index: 10;
+            background: #e82b10; color: #fff; padding: 5px 14px;
+            border-radius: 20px; font-size: 0.78rem; font-weight: 800;
+        }
+        .precio-modal-overlay {
+            position: relative; z-index: 5;
+            font-size: 2rem; font-weight: 800; color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+            letter-spacing: -0.5px;
+        }
+        .cerrar-modal-producto {
+            position: absolute; top: 16px; right: 16px; z-index: 10;
+            background: rgba(0,0,0,0.65); color: #fff; border: none;
+            width: 36px; height: 36px; border-radius: 50%;
+            font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .cerrar-modal-producto:hover { background: #e82b10; transform: scale(1.1); }
+
+        .body-modal-producto { padding: 24px 28px; }
+        .modal-titulo-principal {
+            font-size: 1.65rem; font-weight: 800; color: #111;
+            margin-bottom: 8px; line-height: 1.25;
+        }
+        .modal-desc-texto {
+            font-size: 0.92rem; color: #64748b; line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        /* Grid de 6 tarjetas de especificaciones con borde izquierdo rojo */
+        .grid-spec-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .card-spec-item {
+            background: #f8fafc;
+            border: 1px solid #edf2f7;
+            border-left: 3.5px solid #e82b10;
+            border-radius: 8px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card-spec-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+        }
+        .spec-icon-top {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .spec-label-tiny {
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .spec-val-bold {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Tarjeta del vendedor oscura (Dark Navy) */
+        .vendedor-dark-card {
+            background: #111827;
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .vendedor-dark-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .vendedor-dark-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #f97316;
+            color: #1e3a8a; display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .vendedor-dark-textos .vendedor-dark-label {
+            font-size: 0.68rem; font-weight: 800; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px;
+        }
+        .vendedor-dark-textos h4 {
+            font-size: 1.05rem; color: #fff; font-weight: 700; margin-bottom: 2px;
+        }
+        .vendedor-dark-textos p {
+            font-size: 0.82rem; color: #cbd5e1;
+        }
+        .btn-wpp-green-pill {
+            background: #10b981; color: #fff; padding: 9px 18px;
+            border-radius: 20px; text-decoration: none; font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem; font-weight: 700; display: inline-flex;
+            align-items: center; gap: 6px; border: none; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-wpp-green-pill:hover { background: #059669; transform: translateY(-2px); }
+
+        /* Barra de acción inferior con Comprar Ahora y Añadir al Carrito */
+        .botones-modal-bottom {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .stepper-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            padding: 4px 8px;
+            border-radius: 30px;
+            border: 1.5px solid #e2e8f0;
+        }
+        .btn-qty-step {
+            width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #e2e8f0;
+            background: #fff; font-size: 1.1rem; cursor: pointer; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            color: #64748b; transition: all 0.2s;
+        }
+        .btn-qty-step:hover { border-color: #e82b10; color: #e82b10; }
+        .qty-number { font-weight: 800; font-size: 1.05rem; min-width: 24px; text-align: center; color: #111; }
+        
+        .btn-modal-add-cart-outline {
+            background: #fff; color: #e82b10; border: 1.5px solid #e82b10;
+            padding: 12px 20px; border-radius: 30px; font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem; font-weight: 700; display: inline-flex;
+            align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; transition: all 0.2s; flex: 1; min-width: 170px;
+        }
+        .btn-modal-add-cart-outline:hover { background: #fff5f5; transform: translateY(-2px); }
+
+        .btn-modal-buy-now {
+            background: linear-gradient(135deg, #e82b10, #f27405);
+            color: #fff; padding: 12px 24px;
+            border-radius: 30px; border: none; font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem; font-weight: 700; display: inline-flex;
+            align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; transition: all 0.2s; flex: 1.2; min-width: 180px;
+        }
+        .btn-modal-buy-now:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,43,16,0.35); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero-comprar { padding: 90px 18px 40px; }
+            .hero-comprar h1 { font-size: 1.8rem; }
+            .seccion-catalogo { background-attachment: scroll; min-height: auto; }
+            .seccion-catalogo .contenedor { padding: 20px 14px; }
+            .barra-filtros { flex-direction: column; }
+            .barra-filtros input, .barra-filtros select { min-width: 100%; }
+            .btn-filtrar { width: 100%; }
+            .cuadricula-catalogo { grid-template-columns: 1fr; gap: 18px; }
+            .grid-spec-cards { grid-template-columns: repeat(2, 1fr); }
+            .botones-modal-bottom { flex-direction: column; width: 100%; }
+            .btn-modal-buy-now, .btn-modal-add-cart-outline, .stepper-box { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="barra-navegacion">
+        <div class="contenedor-nav">
+            <a href="index.html" class="logotipo" style="text-decoration:none;">
+                <img src="images/logo_porkcenter.png" alt="PORKCENTER Logo">
+                <span><span style="color:#e82b10;">PORK</span><span style="color:#111;">CENTER</span></span>
+            </a>
+            
+            <ul class="enlaces-nav" id="enlaces-nav">
+                <div class="menu-movil-header">
+                    <div class="logotipo">
+                        <img src="images/logo_porkcenter.png" alt="PORKCENTER Logo">
+                        <span><span style="color:#e82b10;">PORK</span><span style="color:#111;">CENTER</span></span>
+                    </div>
+                    <button class="btn-cerrar-menu-movil" onclick="toggleMenuMovil()" aria-label="Cerrar Menú">&#10005;</button>
+                </div>
+                <li><a href="index.html"><span class="menu-icon">&#127968;</span> Inicio</a></li>
+                <li><a href="comprar.html" class="enlace-activo"><span class="menu-icon">&#128722;</span> Comprar Porcinos</a></li>
+                <li><a href="vender.html"><span class="menu-icon">&#128055;</span> Vender Porcinos</a></li>
+                <li><a href="index.html#noticias"><span class="menu-icon">&#128240;</span> Noticias</a></li>
+                
+                <div class="menu-movil-auth-box">
+                    <div id="menu-movil-sin-sesion">
+                        <button class="btn-auth-movil-full" onclick="toggleMenuMovil(); abrirModalAuth('login')">
+                            <span>&#128100;</span> Iniciar Sesión / Registrarse
+                        </button>
+                    </div>
+                    <div id="menu-movil-con-sesion" style="display:none;">
+                        <div class="menu-movil-perfil-card">
+                            <div class="menu-movil-avatar">&#128100;</div>
+                            <div>
+                                <h4 id="menu-movil-usuario-nombre">Usuario</h4>
+                                <span id="menu-movil-usuario-rol" class="badge-rol badge-rol-comprador">&#128722; Comprador</span>
+                            </div>
+                        </div>
+                        <div class="menu-movil-links-cuenta">
+                            <a onclick="toggleMenuMovil(); abrirModalCuenta('perfil')">&#128100; Mi Perfil</a>
+                            <a onclick="toggleMenuMovil(); abrirModalCuenta('compras')">&#128722; Mis Compras</a>
+                            <a onclick="toggleMenuMovil(); abrirModalCuenta('ventas')">&#128055; Mis Publicaciones</a>
+                            <a onclick="toggleMenuMovil(); cerrarSesionApp()" style="color:#e82b10;">&#128682; Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+
+            <div class="nav-acciones">
+                <button id="btn-login-nav" class="btn-login-nav" onclick="abrirModalAuth('login')" title="Iniciar Sesión">
+                    <span>&#128100;</span> <span class="txt-btn-nav">Iniciar Sesión</span>
+                </button>
+                <div id="btn-usuario-nav" class="btn-usuario-nav" onclick="abrirModalCuenta('perfil')" style="display:none;">
+                    <span id="nombre-usuario-nav">Usuario</span>
+                    <span id="rol-usuario-nav" class="badge-rol badge-rol-comprador">&#128722; Comprador</span>
+                    <div class="dropdown-usuario">
+                        <a onclick="event.stopPropagation();abrirModalCuenta('perfil')">&#128100; Mi Perfil</a>
+                        <a onclick="event.stopPropagation();abrirModalCuenta('compras')">&#128722; Mis Compras</a>
+                        <a onclick="event.stopPropagation();abrirModalCuenta('ventas')">&#128055; Mis Publicaciones</a>
+                        <a onclick="event.stopPropagation();cerrarSesionApp()" style="color:#e82b10;border-top:1px solid #eee;">&#128682; Cerrar Sesión</a>
+                    </div>
+                </div>
+                <button class="btn-carrito-nav" onclick="abrirCarrito()" aria-label="Carrito">
+                    &#128722; <span class="txt-btn-nav">Carrito</span> <span class="badge-carrito">0</span>
+                </button>
+                <button class="btn-menu-movil" onclick="toggleMenuMovil()" aria-label="Menú">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Overlay menú móvil -->
+    <div class="overlay-menu-movil" id="overlay-menu-movil" onclick="toggleMenuMovil()"></div>
+
+    <!-- Barra de Navegación Inferior Móvil (Sticky Bottom Navigation) -->
+    <div class="barra-movil-inferior">
+        <a href="index.html" class="nav-item-movil">
+            <span class="nav-icon-movil">&#127968;</span>
+            <span class="nav-label-movil">Inicio</span>
+        </a>
+        <a href="comprar.html" class="nav-item-movil activo">
+            <span class="nav-icon-movil">&#128269;</span>
+            <span class="nav-label-movil">Comprar</span>
+        </a>
+        <a href="vender.html" class="nav-item-movil">
+            <span class="nav-icon-movil">&#10133;</span>
+            <span class="nav-label-movil">Vender</span>
+        </a>
+        <button onclick="abrirCarrito()" class="nav-item-movil" aria-label="Carrito">
+            <span class="nav-icon-movil">
+                &#128722;
+                <span class="badge-carrito badge-carrito-movil">0</span>
+            </span>
+            <span class="nav-label-movil">Carrito</span>
+        </button>
+        <button onclick="abrirCuentaOMenu()" class="nav-item-movil" aria-label="Mi Cuenta">
+            <span class="nav-icon-movil">&#128100;</span>
+            <span class="nav-label-movil" id="label-cuenta-movil">Cuenta</span>
+        </button>
+    </div>
+
+    <!-- Carrito -->
+    <div class="overlay-carrito" id="overlay-carrito" onclick="cerrarCarrito()"></div>
+    <div class="panel-carrito" id="panel-carrito">
+        <div class="cabecera-carrito">
+            <h2>&#128722; Tu Carrito</h2>
+            <button class="btn-cerrar-carrito" onclick="cerrarCarrito()">&#10005;</button>
+        </div>
+        <div class="lista-carrito" id="lista-carrito"></div>
+        <div class="pie-carrito" id="pie-carrito" style="display:none;">
+            <div class="resumen-carrito">
+                <span class="total-label">Total:</span>
+                <span class="total-precio" id="total-carrito">$0 COP</span>
+            </div>
+            <button class="btn-pagar" onclick="procesarPago()">Proceder al Pago</button>
+        </div>
+    </div>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero-comprar">
+        <h1>&#128055; Catálogo de Porcinos</h1>
+        <p>Encuentra los mejores ejemplares con la genética que tu granja necesita.</p>
+    </section>
+
+    <!-- ===== FILTROS ===== -->
+    <section class="seccion-filtros">
+        <div class="contenedor">
+            <div class="barra-filtros">
+                <input type="text" id="filtro-buscar" placeholder="Buscar por raza, categoría o ubicación..." oninput="filtrarProductos()">
+                <select id="filtro-raza" onchange="filtrarProductos()">
+                    <option value="">Todas las razas</option>
+                    <option value="duroc">Duroc</option>
+                    <option value="pietrain">Pietrain</option>
+                    <option value="landrace">Landrace</option>
+                    <option value="f1">F1 (Cruce)</option>
+                </select>
+                <select id="filtro-lugar" onchange="filtrarProductos()">
+                    <option value="">Cualquier ubicación</option>
+                    <option value="ubala">Ubalá, Cundinamarca</option>
+                    <option value="gachala">Gachalá, Cundinamarca</option>
+                    <option value="calera">La Calera, Cund.</option>
+                </select>
+                <button class="btn-filtrar" onclick="filtrarProductos()">Filtrar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATÁLOGO ===== -->
+    <section class="seccion-catalogo">
+        <div class="contenedor">
+            <div class="cuadricula-catalogo" id="cuadricula-catalogo">
+                <p style="text-align:center;color:#888;padding:40px;">Cargando catálogo...</p>
+            </div>
+            <p id="sin-resultados" style="display:none;text-align:center;padding:40px;color:#888;font-size:1rem;">
+                No se encontraron porcinos con esos filtros. &#128269;
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== MODAL DETALLE PRODUCTO (Diseño exacto de captura) ===== -->
+    <div class="overlay-producto" id="overlay-producto" onclick="if(event.target===this)cerrarModalProducto()">
+        <div class="modal-producto">
+            <div class="img-modal-producto" id="img-modal-producto">
+                <span class="badge-modal-tag" id="cat-modal">Alta Genética</span>
+                <button class="cerrar-modal-producto" onclick="cerrarModalProducto()" aria-label="Cerrar">&#10005;</button>
+                <div class="precio-modal-overlay" id="precio-modal">$0 COP</div>
+            </div>
+            <div class="body-modal-producto">
+                <h2 class="modal-titulo-principal" id="nombre-modal">Nombre del Animal</h2>
+                <p class="modal-desc-texto" id="desc-modal"></p>
+
+                <!-- Grid de 6 especificaciones con borde rojo exacto a la captura -->
+                <div class="grid-spec-cards">
+                    <div class="card-spec-item">
+                        <span class="spec-icon-top">&#128055;</span>
+                        <span class="spec-label-tiny">RAZA</span>
+                        <span class="spec-val-bold" id="raza-modal">Pietrain</span>
+                    </div>
+                    <div class="card-spec-item">
+                        <span class="spec-icon-top">&#128197;</span>
+                        <span class="spec-label-tiny">EDAD</span>
+                        <span class="spec-val-bold" id="edad-modal">3 meses</span>
+                    </div>
+                    <div class="card-spec-item">
+                        <span class="spec-icon-top">&#9878;&#65039;</span>
+                        <span class="spec-label-tiny">PESO</span>
+                        <span class="spec-val-bold" id="peso-modal">12 kg prom.</span>
+                    </div>
+                    <div class="card-spec-item">
+                        <span class="spec-icon-top">&#128230;</span>
+                        <span class="spec-label-tiny">DISPONIBLES</span>
+                        <span class="spec-val-bold" id="cantidad-modal">15 unid.</span>
+                    </div>
+                    <div class="card-spec-item">
+                        <span class="spec-icon-top">&#128205;</span>
+                        <span class="spec-label-tiny">LUGAR</span>
+                        <span class="spec-val-bold" id="lugar-modal">Gachalá, Cundinamarca</span>
+                    </div>
+                    <div class="card-spec-item">
+                        <span class="spec-icon-top">&#128176;</span>
+                        <span class="spec-label-tiny">PRECIO</span>
+                        <span class="spec-val-bold" id="precio-card-modal">$300,000 COP c/u</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta del Vendedor Oscura (Dark Navy exacto a la captura) -->
+                <div class="vendedor-dark-card">
+                    <div class="vendedor-dark-left">
+                        <div class="vendedor-dark-avatar">&#128100;</div>
+                        <div class="vendedor-dark-textos">
+                            <div class="vendedor-dark-label">VENDEDOR</div>
+                            <h4 id="vendedor-nombre-modal">María Gómez</h4>
+                            <p id="vendedor-ubicacion-modal">&#128222; 300 123 4567 | Gachalá, Cund.</p>
+                        </div>
+                    </div>
+                    <a id="btn-whatsapp-modal" href="#" target="_blank" class="btn-wpp-green-pill">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.59.21-1.09.15-1.19-.06-.1-.23-.16-.48-.28"/></svg>
+                        <span>WhatsApp</span>
+                    </a>
+                </div>
+
+                <!-- Barra de acción inferior con Comprar Ahora y Añadir al Carrito -->
+                <div class="botones-modal-bottom">
+                    <div class="stepper-box">
+                        <button type="button" class="btn-qty-step" onclick="cambiarCantidadModal(-1)">−</button>
+                        <span class="qty-number" id="cantidad-modal-input">1</span>
+                        <button type="button" class="btn-qty-step" onclick="cambiarCantidadModal(1)">+</button>
+                    </div>
+                    <button class="btn-modal-add-cart-outline" onclick="agregarDesdeModal()">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                        <span>Añadir al Carrito</span>
+                    </button>
+                    <button class="btn-modal-buy-now" onclick="comprarAhoraDesdeModal()">
+                        <span>&#9889; Comprar Ahora</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== AUTH MODAL ===== -->
+    <div class="overlay-auth" id="overlay-auth" onclick="if(event.target===this)cerrarModalAuth()">
+        <div class="modal-auth">
+            <div class="auth-header">
+                <button class="btn-cerrar-auth" onclick="cerrarModalAuth()">&#10005;</button>
+                <div class="auth-logo">
+                    <img src="images/logo_porkcenter.png" alt="Logo" style="height:38px;">
+                    <div class="brand-name"><span style="color:#e82b10;">PORK</span><span style="color:#fff;">CENTER</span></div>
+                    <p>Tu mercado porcino de confianza</p>
+                </div>
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn activo" data-tab="login" onclick="cambiarTabAuth('login')">Iniciar Sesión</button>
+                    <button class="auth-tab-btn" data-tab="registro" onclick="cambiarTabAuth('registro')">Crear Cuenta</button>
+                </div>
+            </div>
+            <div class="auth-body">
+                <div class="auth-panel activo" id="auth-panel-login">
+                    <form onsubmit="hacerLogin(event)">
+                        <div class="auth-field">
+                            <label>Correo electrónico</label>
+                            <div class="input-wrap"><span class="input-icon">&#128231;</span>
+                                <input type="email" id="login-email" placeholder="tu@correo.com" required>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Contraseña</label>
+                            <div class="input-wrap"><span class="input-icon">&#128274;</span>
+                                <input type="password" id="login-pass" placeholder="Tu contraseña" required>
+                                <button type="button" class="btn-toggle-pass" onclick="togglePass('login-pass',this)">&#128065;&#65039;</button>
+                            </div>
+                        </div>
+                        <div class="auth-error" id="login-error"></div>
+                        <button type="submit" class="btn-auth-submit">Ingresar &rarr;</button>
+                    </form>
+                    <p class="auth-footer-text">&#128272; Demo: <strong>vendedor@porcimarket.com</strong> / <strong>123456</strong></p>
+                    <p class="auth-footer-text">¿No tienes cuenta? <a onclick="cambiarTabAuth('registro')">Regístrate gratis</a></p>
+                </div>
+                <div class="auth-panel" id="auth-panel-registro">
+                    <form onsubmit="hacerRegistro(event)">
+                        <div class="selector-roles-registro">
+                            <button type="button" class="btn-opcion-rol activo" onclick="seleccionarRolRegistro('comprador',this)">&#128722; Comprador</button>
+                            <button type="button" class="btn-opcion-rol" onclick="seleccionarRolRegistro('vendedor',this)">&#128055; Vendedor</button>
+                            <button type="button" class="btn-opcion-rol" onclick="seleccionarRolRegistro('ambos',this)">&#128260; Ambos</button>
+                        </div>
+                        <div class="auth-field">
+                            <label>Nombre</label>
+                            <div class="input-wrap"><span class="input-icon">&#128100;</span>
+                                <input type="text" id="reg-nombre" placeholder="Tu nombre completo" required>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Correo</label>
+                            <div class="input-wrap"><span class="input-icon">&#128231;</span>
+                                <input type="email" id="reg-email" placeholder="tu@correo.com" required>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Teléfono</label>
+                            <div class="input-wrap"><span class="input-icon">&#128241;</span>
+                                <input type="tel" id="reg-telefono" placeholder="Ej: 310 123 4567">
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Contraseña</label>
+                            <div class="input-wrap"><span class="input-icon">&#128274;</span>
+                                <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" required>
+                                <button type="button" class="btn-toggle-pass" onclick="togglePass('reg-pass',this)">&#128065;&#65039;</button>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Confirmar Contraseña</label>
+                            <div class="input-wrap"><span class="input-icon">&#128274;</span>
+                                <input type="password" id="reg-pass2" placeholder="Repite tu contraseña" required>
+                            </div>
+                        </div>
+                        <div class="auth-error" id="reg-error"></div>
+                        <button type="submit" class="btn-auth-submit">Crear Cuenta &rarr;</button>
+                    </form>
+                    <p class="auth-footer-text">¿Ya tienes cuenta? <a onclick="cambiarTabAuth('login')">Inicia sesión</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cuenta -->
+    <div class="overlay-cuenta" id="overlay-cuenta" onclick="if(event.target===this)cerrarModalCuenta()">
+        <div class="modal-cuenta">
+            <div class="cuenta-header">
+                <div class="cuenta-usuario-info">
+                    <div class="cuenta-avatar">&#128100;</div>
+                    <div class="cuenta-detalles">
+                        <h3 id="cuenta-header-nombre">Usuario</h3>
+                        <p id="cuenta-header-email">correo@ejemplo.com</p>
+                        <span id="cuenta-header-rol" class="cuenta-rol-badge badge-rol-comprador">&#128722; Comprador</span>
+                        <p id="cuenta-header-fecha" style="font-size:0.78rem;opacity:0.7;margin-top:4px;"></p>
+                    </div>
+                </div>
+                <button class="btn-cerrar-cuenta" onclick="cerrarModalCuenta()">&#10005;</button>
+            </div>
+            <div class="cuenta-tabs-bar">
+                <button class="tab-btn-cuenta activo" data-tab="perfil" onclick="cambiarTabCuenta('perfil')">&#128100; Perfil</button>
+                <button class="tab-btn-cuenta" data-tab="compras" onclick="cambiarTabCuenta('compras')">&#128722; Compras</button>
+                <button class="tab-btn-cuenta" data-tab="ventas" onclick="cambiarTabCuenta('ventas')">&#128055; Mis Ventas</button>
+            </div>
+            <div class="cuenta-body">
+                <div class="cuenta-panel activo" id="cuenta-panel-perfil">
+                    <form onsubmit="guardarCambiosPerfil(event)">
+                        <div class="auth-field"><label>Nombre</label><input type="text" id="perfil-nombre" required></div>
+                        <div class="auth-field"><label>Teléfono</label><input type="tel" id="perfil-telefono"></div>
+                        <div class="auth-field"><label>Ubicación</label><input type="text" id="perfil-ubicacion"></div>
+                        <div class="auth-field"><label>Biografía</label><textarea id="perfil-bio" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #e5e5e5;font-family:inherit;"></textarea></div>
+                        <button type="submit" class="btn-auth-submit">Guardar Cambios</button>
+                        <button type="button" class="btn-auth-submit" style="background:#111;margin-top:8px;" onclick="cerrarSesionApp()">&#128682; Cerrar Sesión</button>
+                    </form>
+                </div>
+                <div class="cuenta-panel" id="cuenta-panel-compras"><div id="lista-mis-compras"></div></div>
+                <div class="cuenta-panel" id="cuenta-panel-ventas"><div id="lista-mis-ventas"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Checkout -->
+    <div class="overlay-checkout" id="overlay-checkout" onclick="if(event.target===this)cerrarModalCheckout()">
+        <div class="modal-checkout">
+            <div class="checkout-header">
+                <h2>&#128722; Finalizar Compra</h2>
+                <button class="btn-cerrar-cuenta" onclick="cerrarModalCheckout()">&#10005;</button>
+            </div>
+            <div class="checkout-body">
+                <h4 style="margin-bottom:10px;color:#333;">&#128230; Resumen del Pedido</h4>
+                <div class="checkout-resumen-box" id="checkout-items-resumen"></div>
+                <form onsubmit="confirmarCompraCheckout(event)">
+                    <h4 style="margin-bottom:12px;color:#333;">&#128205; Datos de Entrega</h4>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                        <div class="auth-field" style="flex:1;min-width:200px;"><label>Nombre Completo</label><input type="text" id="checkout-nombre" placeholder="Tu nombre" required></div>
+                        <div class="auth-field" style="flex:1;min-width:200px;"><label>Teléfono</label><input type="tel" id="checkout-telefono" placeholder="310 123 4567" required></div>
+                    </div>
+                    <div class="auth-field"><label>Dirección / Finca</label><input type="text" id="checkout-direccion" placeholder="Vereda, Finca o Dirección" required></div>
+                    <div class="auth-field"><label>Ciudad / Municipio</label><input type="text" id="checkout-ciudad" placeholder="Ubalá, Cundinamarca"></div>
+                    <h4 style="margin-bottom:10px;color:#333;">&#128179; Método de Pago</h4>
+                    <div class="metodos-pago-grid">
+                        <div class="metodo-pago-card activo" onclick="seleccionarMetodoPago('Nequi / Daviplata',this)"><span class="icono-pago">&#128241;</span>Nequi/Daviplata</div>
+                        <div class="metodo-pago-card" onclick="seleccionarMetodoPago('Transferencia Bancaria',this)"><span class="icono-pago">&#127968;</span>Transferencia</div>
+                        <div class="metodo-pago-card" onclick="seleccionarMetodoPago('Efectivo contra entrega',this)"><span class="icono-pago">&#128176;</span>Efectivo</div>
+                    </div>
+                    <div class="checkout-total-row">
+                        <span>Total a Pagar:</span>
+                        <span class="checkout-total-monto" id="checkout-total-pagar">$0 COP</span>
+                    </div>
+                    <button type="submit" class="btn-pagar" style="font-size:1rem;">&#9989; Confirmar Pedido</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Recibo -->
+    <div class="overlay-recibo" id="overlay-recibo" onclick="if(event.target===this)cerrarModalRecibo()">
+        <div class="modal-recibo">
+            <div class="recibo-ticket">
+                <div class="recibo-icono-exito">&#10003;</div>
+                <h2>¡Compra Confirmada!</h2>
+                <p class="sub">Tu pedido ha sido registrado exitosamente en PORKCENTER.</p>
+                <div class="recibo-detalles-box">
+                    <div class="recibo-fila"><span>Número de Orden:</span><strong id="recibo-orden-id">#ORD-0000</strong></div>
+                    <div class="recibo-fila"><span>Fecha:</span><strong id="recibo-fecha">2026</strong></div>
+                    <div class="recibo-fila"><span>Cliente:</span><strong id="recibo-cliente">Usuario</strong></div>
+                    <div class="recibo-fila"><span>Método de Pago:</span><strong id="recibo-metodo">Nequi</strong></div>
+                    <div class="recibo-fila"><span>Lugar de Entrega:</span><strong id="recibo-entrega">Ubalá</strong></div>
+                    <div class="recibo-items-lista" id="recibo-lista-items"></div>
+                    <div class="recibo-fila" style="font-size:1.1rem;font-weight:800;color:#e82b10;margin-top:8px;">
+                        <span>Total:</span><strong id="recibo-total">$0 COP</strong>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <a href="https://wa.me/573108373303" target="_blank" class="btn-principal" style="background:#25D366;">&#128241; WhatsApp Soporte</a>
+                    <button class="btn-secundario" onclick="cerrarModalRecibo()">Continuar Explorando</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer id="contacto">
+        <div class="contenedor contenido-pie">
+            <div class="columna-pie">
+                <div class="logotipo" style="margin-bottom:12px;">
+                    <img src="images/logo_porkcenter.png" alt="Logo" style="height:36px;">
+                    <span style="font-weight:800;font-size:1.3rem;margin-left:8px;"><span style="color:#e82b10;">PORK</span><span style="color:#fff;">CENTER</span></span>
+                </div>
+                <p>Tu aliado estratégico en el negocio porcicultor.</p>
+            </div>
+            <div class="columna-pie">
+                <h3>Contacto</h3>
+                <p>Email: info@porcimarket.com.co</p>
+                <p><a href="https://wa.me/573108373303" target="_blank">Tel: 310 837 3303</a></p>
+                <p>Ubicación: Ubalá, Cundinamarca</p>
+            </div>
+            <div class="columna-pie">
+                <h3>Navegar</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="comprar.html">Comprar</a></li>
+                    <li><a href="vender.html">Vender</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="pie-inferior"><p>&copy; 2026 PORKCENTER. Todos los derechos reservados.</p></div>
+    </footer>
+
+    <!-- FAB Flotantes -->
+    <div class="fab-contenedor">
+        <a href="https://wa.me/573108373303" target="_blank" class="fab-btn fab-whatsapp" data-label="WhatsApp" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="white" style="display:block;"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.59.21-1.09.15-1.19-.06-.1-.23-.16-.48-.28"/></svg>
+        </a>
+        <button class="fab-btn fab-soporte" data-label="Soporte" onclick="abrirModalAuth()" aria-label="Soporte">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="white" style="display:block;"><path d="M12 1a9 9 0 0 0-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2a7 7 0 0 1 14 0v2h-4v8h3c1.66 0 3-1.34 3-3v-7a9 9 0 0 0-9-9z"/></svg>
+        </button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+    // ===== LÓGICA DEL CATÁLOGO =====
+    let productoActual = null;
+    let cantidadModal = 1;
+
+    function filtrarProductos() {
+        const busqueda = (document.getElementById('filtro-buscar')?.value || '').toLowerCase().trim();
+        const raza = document.getElementById('filtro-raza')?.value || '';
+        const lugar = document.getElementById('filtro-lugar')?.value || '';
+        const todos = DB.getProductos();
+        const filtrados = todos.filter(p => {
+            const matchBusqueda = !busqueda ||
+                (p.nombre||'').toLowerCase().includes(busqueda) ||
+                (p.categoria||'').toLowerCase().includes(busqueda) ||
+                (p.lugar||'').toLowerCase().includes(busqueda) ||
+                (p.raza||'').toLowerCase().includes(busqueda);
+            const matchRaza = !raza || (p.raza||'').toLowerCase().includes(raza);
+            const matchLugar = !lugar || (p.lugarKey||'').includes(lugar) || (p.lugar||'').toLowerCase().includes(lugar);
+            return matchBusqueda && matchRaza && matchLugar;
+        });
+        renderizarCatalogo(filtrados);
+    }
+
+    function renderizarCatalogo(productos) {
+        const grid = document.getElementById('cuadricula-catalogo');
+        const sinResultados = document.getElementById('sin-resultados');
+        if (!grid) return;
+        if (!productos.length) {
+            grid.innerHTML = '';
+            if (sinResultados) sinResultados.style.display = 'block';
+            return;
+        }
+        if (sinResultados) sinResultados.style.display = 'none';
+        grid.innerHTML = productos.map(p => `
+            <div class="tarjeta-producto" onclick="abrirModalProducto(${p.id})">
+                <div class="img-producto" style="background-image:url('${p.imagen}')">
+                    <div class="img-overlay-hover">
+                        <span>&#128269; Ver Detalles</span>
+                    </div>
+                </div>
+                <div class="info-producto">
+                    <span class="categoria-tag-mini">${p.categoria || 'Porcino'}</span>
+                    <h3>${p.nombre}</h3>
+                    <p class="detalles-linea-1">Edad: ${p.edad || '-'} | Peso: ${p.peso || '-'}</p>
+                    <p class="detalles-linea-2">&#128205; ${p.lugar || 'Ubalá, Cundinamarca'}</p>
+                    <div class="precio-producto">${p.precioStr}</div>
+                    <div class="botones-producto">
+                        <button type="button" class="btn-ver-detalles-pill" onclick="event.stopPropagation();abrirModalProducto(${p.id})">
+                            Ver Detalles
+                        </button>
+                        <button type="button" class="btn-cart-circle" title="Añadir al Carrito" onclick="event.stopPropagation();agregarItemCarrito(DB.getProductoPorId(${p.id}),1)">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function abrirModalProducto(id) {
+        const p = DB.getProductoPorId(id);
+        if (!p) return;
+        productoActual = p;
+        cantidadModal = 1;
+        document.getElementById('img-modal-producto').style.backgroundImage = `url('${p.imagen}')`;
+        document.getElementById('cat-modal').textContent = p.categoria || 'Alta Genética';
+        document.getElementById('nombre-modal').textContent = p.nombre;
+        document.getElementById('precio-modal').textContent = p.precioStr;
+        document.getElementById('raza-modal').textContent = p.raza || 'Pietrain';
+        document.getElementById('edad-modal').textContent = p.edad || '3 meses';
+        document.getElementById('peso-modal').textContent = p.peso || '12 kg prom.';
+        document.getElementById('cantidad-modal').textContent = (p.cantidad || 1) + ' unid.';
+        document.getElementById('lugar-modal').textContent = p.lugar || 'Gachalá, Cundinamarca';
+        document.getElementById('precio-card-modal').textContent = p.precioStr;
+        document.getElementById('desc-modal').textContent = p.descripcion || '';
+        
+        // Vendedor
+        const nombreVendedor = p.vendedor?.nombre || 'María Gómez';
+        const telVendedor = (p.vendedor?.telefono || '3001234567').replace(/\s/g, '');
+        const lugarVendedor = p.lugar || 'Gachalá, Cund.';
+        
+        document.getElementById('vendedor-nombre-modal').textContent = nombreVendedor;
+        document.getElementById('vendedor-ubicacion-modal').textContent = `📞 ${p.vendedor?.telefono || '300 123 4567'} | ${lugarVendedor}`;
+        
+        // WhatsApp con mensaje personalizado
+        const msg = encodeURIComponent(`Hola ${nombreVendedor}, vi su publicación de "${p.nombre}" en PORKCENTER y deseo más información sobre la compra.`);
+        document.getElementById('btn-whatsapp-modal').href = `https://wa.me/57${telVendedor}?text=${msg}`;
+        
+        document.getElementById('cantidad-modal-input').textContent = 1;
+        document.getElementById('overlay-producto').classList.add('activo');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModalProducto() {
+        document.getElementById('overlay-producto').classList.remove('activo');
+        document.body.style.overflow = '';
+    }
+
+    function cambiarCantidadModal(d) {
+        if (!productoActual) return;
+        cantidadModal = Math.max(1, Math.min(cantidadModal + d, productoActual.cantidad || 99));
+        document.getElementById('cantidad-modal-input').textContent = cantidadModal;
+    }
+
+    function agregarDesdeModal() {
+        if (!productoActual) return;
+        agregarItemCarrito(productoActual, cantidadModal);
+        cerrarModalProducto();
+    }
+
+    function comprarAhoraDesdeModal() {
+        if (!productoActual) return;
+        agregarItemCarrito(productoActual, cantidadModal);
+        cerrarModalProducto();
+        if (typeof abrirCarrito === 'function') {
+            abrirCarrito();
+        }
+    }
+
+    window.recargarCatalogo = function() { filtrarProductos(); };
+
+    document.addEventListener('DOMContentLoaded', function() { filtrarProductos(); });
+    </script>
+</body>
+</html>

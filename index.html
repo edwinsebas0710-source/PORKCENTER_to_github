@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <title>PORKCENTER - Noticias y Mercado</title>
+    <link rel="icon" type="image/png" href="images/logo_porkcenter.png">
+    <meta name="theme-color" content="#e82b10">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PORKCENTER">
+    <link rel="apple-touch-icon" href="images/logo_porkcenter.png">
+    <meta name="description" content="Las últimas noticias del sector porcicultor y la mejor plataforma para comprar y vender porcinos.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== PORTADA / HERO ===== */
+        .portada {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('images/hero_bg.png') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            padding: 0 20px;
+        }
+        .portada h1 { font-size: 3.5rem; margin-bottom: 20px; text-shadow: 2px 2px 6px rgba(0,0,0,0.6); }
+        .portada p { font-size: 1.2rem; margin-bottom: 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .botones-portada { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+
+        /* ===== NOTICIAS ===== */
+        .seccion-noticias { padding: 80px 0; background: #fff; }
+        .titulo-seccion { text-align: center; font-size: 2rem; margin-bottom: 2rem; }
+
+        /* Pestañas CSS puras */
+        .contenedor-pestanas { position: relative; }
+        .pestana-radio { display: none; }
+        .pestanas {
+            display: flex; justify-content: center; gap: 12px;
+            margin-bottom: 35px; flex-wrap: wrap;
+        }
+        .pestanas label.btn-pestana {
+            padding: 10px 22px; border: none; background: #f0f0f0;
+            border-radius: 30px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; color: #666; font-family: 'Outfit', sans-serif; font-size: 0.9rem;
+        }
+        .pestanas label.btn-pestana:hover { background: #e82b10; color: #fff; }
+        .contenido-pestana { display: none; animation: fadeInTab 0.4s ease; }
+        #tab-intl:checked ~ #intl,
+        #tab-nacional:checked ~ #nacional,
+        #tab-dept:checked ~ #dept,
+        #tab-local:checked ~ #local { display: block; }
+        #tab-intl:checked ~ .pestanas [for="tab-intl"],
+        #tab-nacional:checked ~ .pestanas [for="tab-nacional"],
+        #tab-dept:checked ~ .pestanas [for="tab-dept"],
+        #tab-local:checked ~ .pestanas [for="tab-local"] { background: #e82b10; color: #fff; }
+        @keyframes fadeInTab { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        /* Tarjetas noticia */
+        .cuadricula-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 25px; }
+        .tarjeta-noticia {
+            display: flex; background: #f5f7fa; border-radius: 12px;
+            overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.06); transition: transform 0.3s;
+        }
+        .tarjeta-noticia:hover { transform: translateY(-4px); }
+        .tarjeta-noticia img { width: 140px; object-fit: cover; flex-shrink: 0; }
+        .info-noticia { padding: 18px; display: flex; flex-direction: column; justify-content: center; }
+        .info-noticia h4 { font-size: 1rem; margin-bottom: 8px; color: #111; }
+        .info-noticia p { font-size: 0.875rem; color: #666; margin-bottom: 12px; }
+        .leer-mas { color: #e82b10; font-weight: 700; font-size: 0.875rem; }
+
+        /* ===== MERCADO HOME ===== */
+        .mercado {
+            padding: 80px 0;
+            background: linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)),
+                        url('images/fondo_del_campo.png') center/cover no-repeat;
+            min-height: 80vh;
+        }
+        .mercado .contenedor {
+            background: rgba(255,255,255,0.45); backdrop-filter: blur(6px);
+            padding: 30px; border-radius: 16px;
+        }
+        .cuadricula { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 25px; }
+        .tarjeta {
+            background: #fff; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .tarjeta:hover { transform: translateY(-8px); box-shadow: 0 14px 38px rgba(0,0,0,0.12); }
+        .img-tarjeta { height: 200px; background-size: cover; background-position: center; }
+        .contenido-tarjeta { padding: 22px; }
+        .etiqueta {
+            background: rgba(232,43,16,0.1); color: #e82b10;
+            padding: 4px 10px; border-radius: 20px; font-size: 0.78rem;
+            font-weight: 700; display: inline-block; margin-bottom: 8px;
+        }
+        .contenido-tarjeta h3 { margin-bottom: 8px; font-size: 1.2rem; }
+        .contenido-tarjeta .detalles { color: #666; font-size: 0.875rem; margin-bottom: 12px; }
+        .contenido-tarjeta .precio { font-size: 1.35rem; font-weight: 800; color: #111; }
+
+        /* ===== FOOTER ===== */
+        footer { background: #1a1a1a; color: #fff; padding: 50px 0 20px; }
+        .contenido-pie { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 35px; margin-bottom: 35px; }
+        .columna-pie h3 { font-size: 1.2rem; margin-bottom: 15px; color: #fff; }
+        .columna-pie p, .columna-pie li { color: #ccc; margin-bottom: 8px; }
+        .columna-pie a:hover { color: #e82b10; }
+        .pie-inferior { text-align: center; padding-top: 18px; border-top: 1px solid #333; color: #888; font-size: 0.875rem; }
+
+        /* ===== RESPONSIVE MÓVIL ===== */
+        @media (max-width: 768px) {
+            .portada { height: auto; min-height: 92vh; padding: 100px 18px 50px; }
+            .portada h1 { font-size: 2rem; line-height: 1.2; }
+            .portada p { font-size: 0.95rem; }
+            .botones-portada { flex-direction: column; width: 100%; max-width: 280px; margin: 0 auto; gap: 12px; }
+            .mercado { padding: 50px 0; }
+            .mercado .contenedor { padding: 15px; }
+            .cuadricula { grid-template-columns: 1fr; gap: 18px; }
+            .pestanas { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+            .pestanas label.btn-pestana { white-space: nowrap; flex-shrink: 0; }
+            .cuadricula-noticias { grid-template-columns: 1fr; }
+            .tarjeta-noticia { flex-direction: column; }
+            .tarjeta-noticia img { width: 100%; height: 160px; }
+            .titulo-seccion { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="barra-navegacion">
+        <div class="contenedor-nav">
+            <a href="index.html" class="logotipo" style="text-decoration:none;">
+                <img src="images/logo_porkcenter.png" alt="PORKCENTER Logo">
+                <span><span style="color:#e82b10;">PORK</span><span style="color:#111;">CENTER</span></span>
+            </a>
+            
+            <ul class="enlaces-nav" id="enlaces-nav">
+                <div class="menu-movil-header">
+                    <div class="logotipo">
+                        <img src="images/logo_porkcenter.png" alt="PORKCENTER Logo">
+                        <span><span style="color:#e82b10;">PORK</span><span style="color:#111;">CENTER</span></span>
+                    </div>
+                    <button class="btn-cerrar-menu-movil" onclick="toggleMenuMovil()" aria-label="Cerrar Menú">&#10005;</button>
+                </div>
+                <li><a href="index.html" class="enlace-activo"><span class="menu-icon">&#127968;</span> Inicio</a></li>
+                <li><a href="comprar.html"><span class="menu-icon">&#128722;</span> Comprar Porcinos</a></li>
+                <li><a href="vender.html"><span class="menu-icon">&#128055;</span> Vender Porcinos</a></li>
+                <li><a href="#noticias" onclick="cerrarMenuMovil()"><span class="menu-icon">&#128240;</span> Noticias</a></li>
+                
+                <div class="menu-movil-auth-box">
+                    <div id="menu-movil-sin-sesion">
+                        <button class="btn-auth-movil-full" onclick="toggleMenuMovil(); abrirModalAuth('login')">
+                            <span>&#128100;</span> Iniciar Sesión / Registrarse
+                        </button>
+                    </div>
+                    <div id="menu-movil-con-sesion" style="display:none;">
+                        <div class="menu-movil-perfil-card">
+                            <div class="menu-movil-avatar">&#128100;</div>
+                            <div>
+                                <h4 id="menu-movil-usuario-nombre">Usuario</h4>
+                                <span id="menu-movil-usuario-rol" class="badge-rol badge-rol-comprador">&#128722; Comprador</span>
+                            </div>
+                        </div>
+                        <div class="menu-movil-links-cuenta">
+                            <a onclick="toggleMenuMovil(); abrirModalCuenta('perfil')">&#128100; Mi Perfil</a>
+                            <a onclick="toggleMenuMovil(); abrirModalCuenta('compras')">&#128722; Mis Compras</a>
+                            <a onclick="toggleMenuMovil(); abrirModalCuenta('ventas')">&#128055; Mis Publicaciones</a>
+                            <a onclick="toggleMenuMovil(); cerrarSesionApp()" style="color:#e82b10;">&#128682; Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+
+            <div class="nav-acciones">
+                <button id="btn-login-nav" class="btn-login-nav" onclick="abrirModalAuth('login')" title="Iniciar Sesión">
+                    <span>&#128100;</span> <span class="txt-btn-nav">Iniciar Sesión</span>
+                </button>
+                <div id="btn-usuario-nav" class="btn-usuario-nav" onclick="abrirModalCuenta('perfil')" style="display:none;">
+                    <span id="nombre-usuario-nav">Usuario</span>
+                    <span id="rol-usuario-nav" class="badge-rol badge-rol-comprador">&#128722; Comprador</span>
+                    <div class="dropdown-usuario">
+                        <a onclick="event.stopPropagation();abrirModalCuenta('perfil')">&#128100; Mi Perfil</a>
+                        <a onclick="event.stopPropagation();abrirModalCuenta('compras')">&#128722; Mis Compras</a>
+                        <a onclick="event.stopPropagation();abrirModalCuenta('ventas')">&#128055; Mis Publicaciones</a>
+                        <a onclick="event.stopPropagation();cerrarSesionApp()" style="color:#e82b10;border-top:1px solid #eee;">&#128682; Cerrar Sesión</a>
+                    </div>
+                </div>
+                <button class="btn-carrito-nav" onclick="abrirCarrito()" aria-label="Carrito">
+                    &#128722; <span class="txt-btn-nav">Carrito</span> <span class="badge-carrito">0</span>
+                </button>
+                <button class="btn-menu-movil" onclick="toggleMenuMovil()" aria-label="Menú">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Overlay menú móvil -->
+    <div class="overlay-menu-movil" id="overlay-menu-movil" onclick="toggleMenuMovil()"></div>
+
+    <!-- Barra de Navegación Inferior Móvil (Sticky Bottom Navigation) -->
+    <div class="barra-movil-inferior">
+        <a href="index.html" class="nav-item-movil activo">
+            <span class="nav-icon-movil">&#127968;</span>
+            <span class="nav-label-movil">Inicio</span>
+        </a>
+        <a href="comprar.html" class="nav-item-movil">
+            <span class="nav-icon-movil">&#128269;</span>
+            <span class="nav-label-movil">Comprar</span>
+        </a>
+        <a href="vender.html" class="nav-item-movil">
+            <span class="nav-icon-movil">&#10133;</span>
+            <span class="nav-label-movil">Vender</span>
+        </a>
+        <button onclick="abrirCarrito()" class="nav-item-movil" aria-label="Carrito">
+            <span class="nav-icon-movil">
+                &#128722;
+                <span class="badge-carrito badge-carrito-movil">0</span>
+            </span>
+            <span class="nav-label-movil">Carrito</span>
+        </button>
+        <button onclick="abrirCuentaOMenu()" class="nav-item-movil" aria-label="Mi Cuenta">
+            <span class="nav-icon-movil">&#128100;</span>
+            <span class="nav-label-movil" id="label-cuenta-movil">Cuenta</span>
+        </button>
+    </div>
+
+    <!-- Overlay carrito -->
+    <div class="overlay-carrito" id="overlay-carrito" onclick="cerrarCarrito()"></div>
+    <div class="panel-carrito" id="panel-carrito">
+        <div class="cabecera-carrito">
+            <h2>&#128722; Tu Carrito</h2>
+            <button class="btn-cerrar-carrito" onclick="cerrarCarrito()">&#10005;</button>
+        </div>
+        <div class="lista-carrito" id="lista-carrito"></div>
+        <div class="pie-carrito" id="pie-carrito" style="display:none;">
+            <div class="resumen-carrito">
+                <span class="total-label">Total:</span>
+                <span class="total-precio" id="total-carrito">$0 COP</span>
+            </div>
+            <button class="btn-pagar" onclick="procesarPago()">&#128722; Proceder al Pago</button>
+        </div>
+    </div>
+
+    <!-- ===== HERO / PORTADA ===== -->
+    <section class="portada" id="inicio">
+        <div class="contenido-portada">
+            <h1>El Mercado Porcino del Futuro</h1>
+            <p>Conecta con los mejores productores y compradores. Alta genética, transparencia y las últimas noticias del sector.</p>
+            <div class="botones-portada">
+                <a href="comprar.html" class="btn-principal">Comprar Cerdos</a>
+                <a href="vender.html" class="btn-secundario">Vender Ahora</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== NOTICIAS ===== -->
+    <section class="seccion-noticias" id="noticias">
+        <div class="contenedor">
+            <h2 class="titulo-seccion">Noticias del Sector Porcicultor</h2>
+            <div class="contenedor-pestanas">
+                <input class="pestana-radio" type="radio" name="pestana" id="tab-intl" checked>
+                <input class="pestana-radio" type="radio" name="pestana" id="tab-nacional">
+                <input class="pestana-radio" type="radio" name="pestana" id="tab-dept">
+                <input class="pestana-radio" type="radio" name="pestana" id="tab-local">
+                <div class="pestanas">
+                    <label class="btn-pestana" for="tab-intl">Internacional</label>
+                    <label class="btn-pestana" for="tab-nacional">Colombia</label>
+                    <label class="btn-pestana" for="tab-dept">Cundinamarca</label>
+                    <label class="btn-pestana" for="tab-local">Ubalá</label>
+                </div>
+                <!-- Internacional -->
+                <div class="contenido-pestana" id="intl">
+                    <div class="cuadricula-noticias">
+                        <article class="tarjeta-noticia">
+                            <img src="images/news_thumb.png" alt="Noticia Internacional">
+                            <div class="info-noticia">
+                                <h4>Exportaciones de carne de cerdo en Europa alcanzan récord</h4>
+                                <p>El mercado europeo muestra un incremento del 15% en exportaciones hacia Asia este último trimestre...</p>
+                                <a href="#" class="leer-mas">Leer más &rarr;</a>
+                            </div>
+                        </article>
+                        <article class="tarjeta-noticia">
+                            <img src="images/news_thumb.png" alt="Noticia Internacional">
+                            <div class="info-noticia">
+                                <h4>Nuevas tecnologías en alimentación porcina</h4>
+                                <p>Innovaciones desde Estados Unidos prometen reducir los costos de alimentación en un 20%...</p>
+                                <a href="#" class="leer-mas">Leer más &rarr;</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <!-- Nacional -->
+                <div class="contenido-pestana" id="nacional">
+                    <div class="cuadricula-noticias">
+                        <article class="tarjeta-noticia">
+                            <img src="images/news_thumb.png" alt="Noticia Nacional">
+                            <div class="info-noticia">
+                                <h4>Porkcolombia anuncia nueva campaña de consumo</h4>
+                                <p>La asociación nacional busca incentivar el consumo de carne de cerdo en los hogares colombianos...</p>
+                                <a href="#" class="leer-mas">Leer más &rarr;</a>
+                            </div>
+                        </article>
+                        <article class="tarjeta-noticia">
+                            <img src="images/news_thumb.png" alt="Noticia Nacional">
+                            <div class="info-noticia">
+                                <h4>Suben los precios del cerdo en pie a nivel nacional</h4>
+                                <p>Factores climáticos y el costo de los insumos empujan el precio del cerdo en las principales subastas del país...</p>
+                                <a href="#" class="leer-mas">Leer más &rarr;</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <!-- Cundinamarca -->
+                <div class="contenido-pestana" id="dept">
+                    <div class="cuadricula-noticias">
+                        <article class="tarjeta-noticia">
+                            <img src="images/news_thumb.png" alt="Noticia Cundinamarca">
+                            <div class="info-noticia">
+                                <h4>Cundinamarca lidera producción porcina en la región andina</h4>
+                                <p>El departamento consolida su posición como mayor productor del centro del país con avances en bioseguridad...</p>
+                                <a href="#" class="leer-mas">Leer más &rarr;</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <!-- Ubalá -->
+                <div class="contenido-pestana" id="local">
+                    <div class="cuadricula-noticias">
+                        <article class="tarjeta-noticia">
+                            <img src="images/news_thumb.png" alt="Noticia Ubalá">
+                            <div class="info-noticia">
+                                <h4>Subasta porcina en Ubalá registra nuevo precio máximo</h4>
+                                <p>Productores de Ubalá celebran jornada de subasta histórica con más de 200 animales transados...</p>
+                                <a href="#" class="leer-mas">Leer más &rarr;</a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- ===== FOOTER ===== -->
+    <footer id="contacto">
+        <div class="contenedor contenido-pie">
+            <div class="columna-pie">
+                <div class="logotipo" style="margin-bottom:12px;">
+                    <img src="images/logo_porkcenter.png" alt="Logo" style="height:36px;">
+                    <span style="font-weight:800;font-size:1.3rem;margin-left:8px;color:#fff;"><span style="color:#e82b10;">PORK</span>CENTER</span>
+                </div>
+                <p>Tu aliado estratégico en el negocio porcicultor.</p>
+            </div>
+            <div class="columna-pie">
+                <h3>Contacto</h3>
+                <p>Email: info@porcimarket.com.co</p>
+                <p><a href="https://wa.me/573108373303" target="_blank">Tel: 310 837 3303</a></p>
+                <p>Ubicación: Ubalá, Cundinamarca</p>
+            </div>
+            <div class="columna-pie">
+                <h3>Enlaces</h3>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="comprar.html">Comprar</a></li>
+                    <li><a href="vender.html">Vender</a></li>
+                    <li><a href="#noticias">Noticias</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="pie-inferior">
+            <p>&copy; 2026 PORKCENTER. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- ===== BOTONES FLOTANTES ===== -->
+    <div class="fab-contenedor">
+        <a href="https://wa.me/573108373303" target="_blank" class="fab-btn fab-whatsapp" data-label="WhatsApp" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="white" style="display:block;"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.59.21-1.09.15-1.19-.06-.1-.23-.16-.48-.28"/></svg>
+        </a>
+        <button class="fab-btn fab-soporte" data-label="Soporte" onclick="abrirModalAuth()" aria-label="Soporte">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="white" style="display:block;"><path d="M12 1a9 9 0 0 0-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2a7 7 0 0 1 14 0v2h-4v8h3c1.66 0 3-1.34 3-3v-7a9 9 0 0 0-9-9z"/></svg>
+        </button>
+    </div>
+
+    <!-- ===== MODAL AUTH ===== -->
+    <div class="overlay-auth" id="overlay-auth" onclick="if(event.target===this)cerrarModalAuth()">
+        <div class="modal-auth">
+            <div class="auth-header">
+                <button class="btn-cerrar-auth" onclick="cerrarModalAuth()">&#10005;</button>
+                <div class="auth-logo">
+                    <img src="images/logo_porkcenter.png" alt="Logo" style="height:38px;">
+                    <div class="brand-name"><span style="color:#e82b10;">PORK</span><span style="color:#fff;">CENTER</span></div>
+                    <p>Tu mercado porcino de confianza</p>
+                </div>
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn activo" data-tab="login" onclick="cambiarTabAuth('login')">Iniciar Sesión</button>
+                    <button class="auth-tab-btn" data-tab="registro" onclick="cambiarTabAuth('registro')">Crear Cuenta</button>
+                </div>
+            </div>
+            <div class="auth-body">
+                <div class="auth-panel activo" id="auth-panel-login">
+                    <form onsubmit="hacerLogin(event)">
+                        <div class="auth-field">
+                            <label>Correo electrónico</label>
+                            <div class="input-wrap"><span class="input-icon">&#128231;</span>
+                                <input type="email" id="login-email" placeholder="tu@correo.com" required>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Contraseña</label>
+                            <div class="input-wrap"><span class="input-icon">&#128274;</span>
+                                <input type="password" id="login-pass" placeholder="Tu contraseña" required>
+                                <button type="button" class="btn-toggle-pass" onclick="togglePass('login-pass',this)">&#128065;&#65039;</button>
+                            </div>
+                        </div>
+                        <div class="auth-error" id="login-error"></div>
+                        <button type="submit" class="btn-auth-submit">Ingresar &rarr;</button>
+                    </form>
+                    <p class="auth-footer-text">&#128272; Demo: <strong>vendedor@porcimarket.com</strong> / <strong>123456</strong></p>
+                    <p class="auth-footer-text">¿No tienes cuenta? <a onclick="cambiarTabAuth('registro')">Regístrate gratis</a></p>
+                </div>
+                <div class="auth-panel" id="auth-panel-registro">
+                    <form onsubmit="hacerRegistro(event)">
+                        <div class="selector-roles-registro">
+                            <button type="button" class="btn-opcion-rol activo" onclick="seleccionarRolRegistro('comprador',this)">&#128722; Comprador</button>
+                            <button type="button" class="btn-opcion-rol" onclick="seleccionarRolRegistro('vendedor',this)">&#128055; Vendedor</button>
+                            <button type="button" class="btn-opcion-rol" onclick="seleccionarRolRegistro('ambos',this)">&#128260; Ambos</button>
+                        </div>
+                        <div class="auth-field">
+                            <label>Nombre</label>
+                            <div class="input-wrap"><span class="input-icon">&#128100;</span>
+                                <input type="text" id="reg-nombre" placeholder="Tu nombre completo" required>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Correo</label>
+                            <div class="input-wrap"><span class="input-icon">&#128231;</span>
+                                <input type="email" id="reg-email" placeholder="tu@correo.com" required>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Teléfono WhatsApp</label>
+                            <div class="input-wrap"><span class="input-icon">&#128241;</span>
+                                <input type="tel" id="reg-telefono" placeholder="Ej: 310 123 4567">
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Contraseña</label>
+                            <div class="input-wrap"><span class="input-icon">&#128274;</span>
+                                <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" required>
+                                <button type="button" class="btn-toggle-pass" onclick="togglePass('reg-pass',this)">&#128065;&#65039;</button>
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Confirmar Contraseña</label>
+                            <div class="input-wrap"><span class="input-icon">&#128274;</span>
+                                <input type="password" id="reg-pass2" placeholder="Repite tu contraseña" required>
+                            </div>
+                        </div>
+                        <div class="auth-error" id="reg-error"></div>
+                        <button type="submit" class="btn-auth-submit">Crear Cuenta &rarr;</button>
+                    </form>
+                    <p class="auth-footer-text">¿Ya tienes cuenta? <a onclick="cambiarTabAuth('login')">Inicia sesión</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cuenta / Dashboard -->
+    <div class="overlay-cuenta" id="overlay-cuenta" onclick="if(event.target===this)cerrarModalCuenta()">
+        <div class="modal-cuenta">
+            <div class="cuenta-header">
+                <div class="cuenta-usuario-info">
+                    <div class="cuenta-avatar">&#128100;</div>
+                    <div class="cuenta-detalles">
+                        <h3 id="cuenta-header-nombre">Usuario</h3>
+                        <p id="cuenta-header-email">correo@ejemplo.com</p>
+                        <span id="cuenta-header-rol" class="cuenta-rol-badge badge-rol-comprador">&#128722; Comprador</span>
+                        <p id="cuenta-header-fecha" style="font-size:0.78rem;opacity:0.7;margin-top:4px;"></p>
+                    </div>
+                </div>
+                <button class="btn-cerrar-cuenta" onclick="cerrarModalCuenta()">&#10005;</button>
+            </div>
+            <div class="cuenta-tabs-bar">
+                <button class="tab-btn-cuenta activo" data-tab="perfil" onclick="cambiarTabCuenta('perfil')">&#128100; Perfil</button>
+                <button class="tab-btn-cuenta" data-tab="compras" onclick="cambiarTabCuenta('compras')">&#128722; Compras</button>
+                <button class="tab-btn-cuenta" data-tab="ventas" onclick="cambiarTabCuenta('ventas')">&#128055; Mis Ventas</button>
+            </div>
+            <div class="cuenta-body">
+                <div class="cuenta-panel activo" id="cuenta-panel-perfil">
+                    <div class="switch-rol-box">
+                        <h4>&#128260; Cambiar Rol Activo</h4>
+                        <p>Selecciona cómo deseas operar en PORKCENTER:</p>
+                        <div class="switch-rol-btns">
+                            <button type="button" class="btn-opcion-rol" onclick="cambiarRolRapido('comprador')">&#128722; Comprador</button>
+                            <button type="button" class="btn-opcion-rol" onclick="cambiarRolRapido('vendedor')">&#128055; Vendedor</button>
+                            <button type="button" class="btn-opcion-rol" onclick="cambiarRolRapido('ambos')">&#128260; Ambos</button>
+                        </div>
+                    </div>
+                    <form onsubmit="guardarCambiosPerfil(event)">
+                        <div style="display:flex;gap:15px;flex-wrap:wrap;">
+                            <div class="auth-field" style="flex:1;min-width:200px;">
+                                <label>Nombre</label>
+                                <input type="text" id="perfil-nombre" required>
+                            </div>
+                            <div class="auth-field" style="flex:1;min-width:200px;">
+                                <label>Teléfono</label>
+                                <input type="tel" id="perfil-telefono">
+                            </div>
+                        </div>
+                        <div class="auth-field">
+                            <label>Ubicación / Municipio</label>
+                            <input type="text" id="perfil-ubicacion">
+                        </div>
+                        <div class="auth-field">
+                            <label>Biografía</label>
+                            <textarea id="perfil-bio" rows="2" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #e5e5e5;font-family:inherit;"></textarea>
+                        </div>
+                        <button type="submit" class="btn-auth-submit">Guardar Cambios</button>
+                        <button type="button" class="btn-auth-submit" style="background:#111;margin-top:8px;" onclick="cerrarSesionApp()">&#128682; Cerrar Sesión</button>
+                    </form>
+                </div>
+                <div class="cuenta-panel" id="cuenta-panel-compras">
+                    <div id="lista-mis-compras"></div>
+                </div>
+                <div class="cuenta-panel" id="cuenta-panel-ventas">
+                    <div id="lista-mis-ventas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Checkout -->
+    <div class="overlay-checkout" id="overlay-checkout" onclick="if(event.target===this)cerrarModalCheckout()">
+        <div class="modal-checkout">
+            <div class="checkout-header">
+                <h2>&#128722; Finalizar Compra</h2>
+                <button class="btn-cerrar-cuenta" onclick="cerrarModalCheckout()">&#10005;</button>
+            </div>
+            <div class="checkout-body">
+                <h4 style="margin-bottom:10px;color:#333;">&#128230; Resumen del Pedido</h4>
+                <div class="checkout-resumen-box" id="checkout-items-resumen"></div>
+                <form onsubmit="confirmarCompraCheckout(event)">
+                    <h4 style="margin-bottom:12px;color:#333;">&#128205; Datos de Entrega</h4>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                        <div class="auth-field" style="flex:1;min-width:200px;">
+                            <label>Nombre Completo</label>
+                            <input type="text" id="checkout-nombre" placeholder="Tu nombre" required>
+                        </div>
+                        <div class="auth-field" style="flex:1;min-width:200px;">
+                            <label>Teléfono WhatsApp</label>
+                            <input type="tel" id="checkout-telefono" placeholder="310 123 4567" required>
+                        </div>
+                    </div>
+                    <div class="auth-field">
+                        <label>Dirección / Finca</label>
+                        <input type="text" id="checkout-direccion" placeholder="Vereda, Finca o Dirección" required>
+                    </div>
+                    <div class="auth-field">
+                        <label>Ciudad / Municipio</label>
+                        <input type="text" id="checkout-ciudad" placeholder="Ubalá, Cundinamarca">
+                    </div>
+                    <h4 style="margin-bottom:10px;color:#333;">&#128179; Método de Pago</h4>
+                    <div class="metodos-pago-grid">
+                        <div class="metodo-pago-card activo" onclick="seleccionarMetodoPago('Nequi / Daviplata',this)">
+                            <span class="icono-pago">&#128241;</span>Nequi / Daviplata
+                        </div>
+                        <div class="metodo-pago-card" onclick="seleccionarMetodoPago('Transferencia Bancaria',this)">
+                            <span class="icono-pago">&#127968;</span>Transferencia
+                        </div>
+                        <div class="metodo-pago-card" onclick="seleccionarMetodoPago('Efectivo contra entrega',this)">
+                            <span class="icono-pago">&#128176;</span>Efectivo
+                        </div>
+                    </div>
+                    <div class="checkout-total-row">
+                        <span>Total a Pagar:</span>
+                        <span class="checkout-total-monto" id="checkout-total-pagar">$0 COP</span>
+                    </div>
+                    <button type="submit" class="btn-pagar" style="font-size:1rem;">&#9989; Confirmar Pedido</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Recibo -->
+    <div class="overlay-recibo" id="overlay-recibo" onclick="if(event.target===this)cerrarModalRecibo()">
+        <div class="modal-recibo">
+            <div class="recibo-ticket">
+                <div class="recibo-icono-exito">&#10003;</div>
+                <h2>¡Compra Confirmada!</h2>
+                <p class="sub">Tu pedido ha sido registrado exitosamente en PORKCENTER.</p>
+                <div class="recibo-detalles-box">
+                    <div class="recibo-fila"><span>Número de Orden:</span><strong id="recibo-orden-id">#ORD-0000</strong></div>
+                    <div class="recibo-fila"><span>Fecha:</span><strong id="recibo-fecha">2026</strong></div>
+                    <div class="recibo-fila"><span>Cliente:</span><strong id="recibo-cliente">Usuario</strong></div>
+                    <div class="recibo-fila"><span>Método de Pago:</span><strong id="recibo-metodo">Nequi</strong></div>
+                    <div class="recibo-fila"><span>Lugar de Entrega:</span><strong id="recibo-entrega">Ubalá</strong></div>
+                    <div class="recibo-items-lista" id="recibo-lista-items"></div>
+                    <div class="recibo-fila" style="font-size:1.1rem;font-weight:800;color:#e82b10;margin-top:8px;">
+                        <span>Total:</span><strong id="recibo-total">$0 COP</strong>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <a href="https://wa.me/573108373303" target="_blank" class="btn-principal" style="background:#25D366;display:inline-flex;align-items:center;gap:8px;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.64c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.78 2.72 4.31 3.81.6.26 1.07.42 1.44.54.61.19 1.16.17 1.6.1.49-.07 1.47-.6 1.68-1.18.21-.59.21-1.09.15-1.19-.06-.1-.23-.16-.48-.28"/></svg>
+                        <span>Contactar por WhatsApp</span>
+                    </a>
+                    <button class="btn-secundario" onclick="cerrarModalRecibo()">Continuar Explorando</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
