@@ -28,6 +28,43 @@ const dbConfig = {
     queueLimit: 0
 };
 
+const fs = require('fs');
+
+async function ejecutarScriptSQL(connection) {
+    const sqlPath = path.join(__dirname, 'database_porkcenter.sql');
+    if (!fs.existsSync(sqlPath)) {
+        throw new Error('database_porkcenter.sql no encontrado');
+    }
+
+    let rawSql = fs.readFileSync(sqlPath, 'utf8');
+
+    // Limpiar comandos no compatibles con la BD de Railway (evitar DROP/CREATE DATABASE y USE)
+    rawSql = rawSql.replace(/DROP DATABASE IF EXISTS[^;]+;/gi, '');
+    rawSql = rawSql.replace(/CREATE DATABASE[^;]+;/gi, '');
+    rawSql = rawSql.replace(/USE [^;]+;/gi, '');
+    rawSql = rawSql.replace(/DELIMITER \$\$/g, '');
+    rawSql = rawSql.replace(/DELIMITER ;/g, '');
+    rawSql = rawSql.replace(/\$\$/g, ';');
+
+    const statements = rawSql
+        .split(';')
+        .map(s => s.trim())
+        .filter(s => s.length > 5 && !s.startsWith('--'));
+
+    await connection.query('SET FOREIGN_KEY_CHECKS = 0');
+    let ejecutadas = 0;
+    for (const statement of statements) {
+        try {
+            await connection.query(statement);
+            ejecutadas++;
+        } catch (err) {
+            // Ignorar errores no críticos (como DROP TABLE de tablas que aún no existen)
+        }
+    }
+    await connection.query('SET FOREIGN_KEY_CHECKS = 1');
+    return ejecutadas;
+}
+
 // Pool de conexiones
 let pool;
 async function conectarDB() {
@@ -36,6 +73,21 @@ async function conectarDB() {
         pool = mysql.createPool(connectionConfig);
         const connection = await pool.getConnection();
         console.log('✅ Conexión exitosa a la base de datos MySQL');
+
+        // Auto-inicializar tablas si la base de datos está vacía
+        try {
+            const [rows] = await connection.query("SHOW TABLES LIKE 'publicaciones_porcino'");
+            if (rows.length === 0) {
+                console.log('🔄 Inicializando base de datos en la nube...');
+                const count = await ejecutarScriptSQL(connection);
+                console.log(`✅ Base de datos lista con ${count} sentencias ejecutadas.`);
+            } else {
+                console.log('✅ Tablas de PorkCenter ya existen en la base de datos.');
+            }
+        } catch (initErr) {
+            console.warn('Aviso en inicialización:', initErr.message);
+        }
+
         connection.release();
     } catch (error) {
         console.error('⚠️ Error al conectar a MySQL:', error.message);
@@ -43,6 +95,18 @@ async function conectarDB() {
     }
 }
 conectarDB();
+
+// Ruta manual para inicializar o recargar la base de datos en la nube
+app.get('/api/setup-db', async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const count = await ejecutarScriptSQL(connection);
+        connection.release();
+        res.json({ ok: true, mensaje: `Base de datos inicializada con éxito (${count} sentencias ejecutadas)` });
+    } catch (err) {
+        res.status(500).json({ ok: false, error: err.message });
+    }
+});
 
 // ==========================================
 // ENDPOINTS / RUTAS DE LA API
