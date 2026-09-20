@@ -37,19 +37,17 @@ async function ejecutarScriptSQL(connection) {
     }
 
     let rawSql = fs.readFileSync(sqlPath, 'utf8');
-
-    // Limpiar comandos no compatibles con la BD de Railway (evitar DROP/CREATE DATABASE y USE)
+    rawSql = rawSql.replace(/--.*$/gm, '');
+    rawSql = rawSql.replace(/\/\*[\s\S]*?\*\//g, '');
     rawSql = rawSql.replace(/DROP DATABASE IF EXISTS[^;]+;/gi, '');
     rawSql = rawSql.replace(/CREATE DATABASE[^;]+;/gi, '');
     rawSql = rawSql.replace(/USE [^;]+;/gi, '');
-    rawSql = rawSql.replace(/DELIMITER \$\$/g, '');
-    rawSql = rawSql.replace(/DELIMITER ;/g, '');
-    rawSql = rawSql.replace(/\$\$/g, ';');
 
-    const statements = rawSql
+    const cleanSql = rawSql.replace(/DELIMITER\s+\$\$[\s\S]*?DELIMITER\s*;/gi, '');
+    const statements = cleanSql
         .split(';')
         .map(s => s.trim())
-        .filter(s => s.length > 5 && !s.startsWith('--'));
+        .filter(s => s.length > 5);
 
     await connection.query('SET FOREIGN_KEY_CHECKS = 0');
     let ejecutadas = 0;
